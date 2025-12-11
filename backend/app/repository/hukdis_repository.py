@@ -146,12 +146,15 @@ class HukdisRepository:
                     conn.execute(text(sql))
 
     @staticmethod
-    def find_existing(conn, table_name, nomor_lha, pn):
+    def find_existing(conn, table_name, nomor_lha, pn, kode_unit_kerja):
         find_sql = text(f"""
             SELECT * FROM {table_name}
-            WHERE nomor_lha = :nomor_lha AND pn = :pn AND is_deleted = 0
+            WHERE nomor_lha = :nomor_lha 
+            AND pn = :pn 
+            AND kode_unit_kerja = :kode_unit_kerja 
+            AND is_deleted = 0
         """)
-        return conn.execute(find_sql, {"nomor_lha": nomor_lha, "pn": pn}).mappings().fetchone()
+        return conn.execute(find_sql, {"nomor_lha": nomor_lha, "pn": pn, "kode_unit_kerja": kode_unit_kerja}).mappings().fetchone()
 
     @staticmethod
     def update_row(conn, table_name, row, row_id):

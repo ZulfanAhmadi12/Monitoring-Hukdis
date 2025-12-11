@@ -58,6 +58,28 @@ class HukdisService:
             # ensure key columns exist
             df["nomor_lha"] = df.get("nomor_lha", "").astype(str).fillna("").replace("nan", "").str.strip()
             df["pn"] = df.get("pn", "").astype(str).fillna("").replace("nan", "").str.strip()
+            def clean_kode_unit_kerja(x):
+                # NaN -> empty string
+                if pd.isna(x):
+                    return ""
+
+                s = str(x).strip()
+
+                # jika berasal dari float string seperti "300.0", hapus suffix .0
+                if s.endswith(".0"):
+                    s = s[:-2]
+
+                # jika seluruhnya digit (0-9), hapus leading zeros
+                # tapi jangan menghasilkan empty string: jika hasilnya "", tetapkan "0"
+                if s.isdigit():
+                    s = s.lstrip("0")
+                    if s == "":
+                        s = "0"
+                    return s
+
+                # jika bukan murni digit (mengandung huruf, simbol), kembalikan apa adanya
+                return s
+            df["kode_unit_kerja"] = df["kode_unit_kerja"].apply(clean_kode_unit_kerja)
 
             # Normalize entire DF: convert literal 'nan' and empty strings to None for reliable checks
             # (helps because dtype=str turns NaN into 'nan' string in some environments)
@@ -130,6 +152,7 @@ class HukdisService:
                     for idx, row in df.iterrows():
                         nomor_lha = row.get("nomor_lha", "") or ""
                         pn = row.get("pn", "") or ""
+                        kode_unit_kerja = row.get("kode_unit_kerja", "") or ""
 
                         # start savepoint for this row
                         save = conn.begin_nested()
@@ -146,8 +169,8 @@ class HukdisService:
                                         row[col] = val
                                 except Exception as e:
                                     # log error, record and skip this row (don't abort whole upload)
-                                    err_msg = f"Row nomor_lha={nomor_lha}, pn={pn}: kategori error: {e}"
-                                    errors.append({"nomor_lha": nomor_lha, "pn": pn, "error": str(e)})
+                                    err_msg = f"Row nomor_lha={nomor_lha}, pn={pn}, kode_uker={kode_unit_kerja}: kategori error: {e}"
+                                    errors.append({"nomor_lha": nomor_lha, "pn": pn,"kode_uker": kode_unit_kerja, "error": str(e)})
                                     # write event log using the same connection to avoid locking
                                     try:
                                         HukdisRepository.insert_event(conn, "upload_error", err_msg, upload_ts)
@@ -157,7 +180,7 @@ class HukdisService:
                                     save.rollback()
                                     continue  # skip to next row
 
-                            existing = HukdisRepository.find_existing(conn, table_name, nomor_lha, pn)
+                            existing = HukdisRepository.find_existing(conn, table_name, nomor_lha, pn, kode_unit_kerja)
 
                             if existing:
                                 # update path
@@ -180,8 +203,8 @@ class HukdisService:
                                 save.rollback()
                             except Exception:
                                 pass
-                            err_detail = f"Row nomor_lha={nomor_lha}, pn={pn}: DB error: {inner_e}"
-                            errors.append({"nomor_lha": nomor_lha, "pn": pn, "error": str(inner_e)})
+                            err_detail = f"Row nomor_lha={nomor_lha}, pn={pn}, kode_unit_kerja={kode_unit_kerja}: DB error: {inner_e}"
+                            errors.append({"nomor_lha": nomor_lha, "pn": pn,"kode_unit_kerja": kode_unit_kerja, "error": str(inner_e)})
                             try:
                                 HukdisRepository.insert_event(conn, "upload_error", err_detail, upload_ts)
                             except Exception:
@@ -199,11 +222,12 @@ class HukdisService:
                     for idx, row in df.iterrows():
                         nomor_lha = row.get("nomor_lha", "") or ""
                         pn = row.get("pn", "") or ""
+                        kode_unit_kerja = row.get("kode_unit_kerja", "") or ""
 
                         # start savepoint for this row
                         save = conn.begin_nested()
                         try:
-                            existing = HukdisRepository.find_existing(conn, table_name, nomor_lha, pn)
+                            existing = HukdisRepository.find_existing(conn, table_name, nomor_lha, pn, kode_unit_kerja)
 
                             if existing:
                                 # update path
@@ -227,8 +251,8 @@ class HukdisService:
                                 save.rollback()
                             except Exception:
                                 pass
-                            err_detail = f"Row nomor_lha={nomor_lha}, pn={pn}: DB error: {inner_e}"
-                            errors.append({"nomor_lha": nomor_lha, "pn": pn, "error": str(inner_e)})
+                            err_detail = f"Row nomor_lha={nomor_lha}, pn={pn}, kode_uker{kode_unit_kerja}: DB error: {inner_e}"
+                            errors.append({"nomor_lha": nomor_lha, "pn": pn,"kode_unit_kerja": kode_unit_kerja, "error": str(inner_e)})
                             try:
                                 HukdisRepository.insert_event(conn, "upload_error", err_detail, upload_ts)
                             except Exception:
