@@ -1,0 +1,55 @@
+# ====== PYTHON EMBEDDED RUNTIME (IGNORE ALL) ======
+python.exe
+pythonw.exe
+python3.dll
+vcruntime*.dll
+python3*.zip
+DLLs/
+Lib/
+Tools/
+Scripts/
+Include/
+
+# Jika kamu taruh python_embedded di folder khusus:
+python_embedded/
+
+# ====== VENV ======
+venv/
+.env/
+.env.*
+
+# ====== PYTHON CACHE ======
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ====== STREAMLIT CACHE ======
+.streamlit/
+.streamlit/cache/
+.streamlit/logs/
+
+# ====== FASTAPI / GENERAL LOGS ======
+logs/
+*.log
+
+# ====== BACKUP FILES ======
+*.bak
+*.py.bak
+*.old
+*~ 
+
+# ====== BUILD / DIST ======
+dist/
+build/
+*.spec
+
+# ====== EDITOR SETTINGS ======
+.vscode/
+.idea/
+*.swp
+
+# ====== OS FILES ======
+Thumbs.db
+.DS_Store
+.env

@@ -1,0 +1,44 @@
+[
+  {
+    "kategori": "Ringan",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "tidak terpenuhi",
+    "financial": "tidak terpenuhi",
+    "fraud": "tidak terpenuhi"
+  },
+  {
+    "kategori": "Ringan",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "terpenuhi",
+    "financial": "tidak terpenuhi",
+    "fraud": "tidak terpenuhi"
+  },
+  {
+    "kategori": "Sedang",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "tidak terpenuhi",
+    "financial": "terpenuhi",
+    "fraud": "tidak terpenuhi"
+  },
+  {
+    "kategori": "Berat",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "terpenuhi",
+    "financial": "terpenuhi",
+    "fraud": "tidak terpenuhi"
+  },
+  {
+    "kategori": "Berat",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "terpenuhi",
+    "financial": "tidak terpenuhi",
+    "fraud": "terpenuhi"
+  },
+  {
+    "kategori": "Berat",
+    "kewenangan": "terpenuhi",
+    "kesengajaan": "terpenuhi",
+    "financial": "terpenuhi",
+    "fraud": "terpenuhi"
+  }
+]
